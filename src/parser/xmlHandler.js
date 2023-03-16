@@ -742,6 +742,9 @@ class XMLHandler {
       var elementName = QName.parse(nsName).name;
       nsContext.popContext();
       var current = stack.pop();
+
+      if (current?.object === undefined) current.object = "";
+
       var top = stack[stack.length - 1];
       if (top.object === undefined) {
         top.object = {};
