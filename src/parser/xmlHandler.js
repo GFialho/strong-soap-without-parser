@@ -92,7 +92,7 @@ class XMLHandler {
       name = descriptor.qname.name;
       let isSimple = descriptor.isSimple;
       let attrs = null;
-      if (descriptor.isMany) {
+      if (descriptor.isMany || descriptor.elements?.length) {
         if (Array.isArray(val)) {
           for (let i = 0, n = val.length; i < n; i++) {
             node = this.jsonToXml(node, nsContext, descriptor, val[i]);
@@ -675,7 +675,7 @@ class XMLHandler {
           if (qname.name == "nil") {
             // xsi:nil
             if (attrs[a] === "true") {
-              obj = null;
+              obj = "";
             }
             continue;
           } else if (qname.name === "type") {

@@ -1,6 +1,6 @@
 {
   "name": "strong-soap-without-parser",
-  "version": "2.0.9",
+  "version": "3.0.1",
   "description": "A minimal node SOAP client",
   "engines": {
     "node": ">=8.11.1"
@@ -28,7 +28,7 @@
     "lib": "./lib"
   },
   "scripts": {
-    "_postinstall": "husky install",
+    "postinstall": "husky install",
     "build": "babel src --source-maps --out-dir=lib",
     "prepublishOnly": "pinst --disable && npm run build",
     "postpublish": "pinst --enable",
