@@ -52,6 +52,7 @@ class XMLHandler {
       "ClientURN",
       "CashReference",
       "Reference",
+      "SendMethod",
     ];
     if (
       (val === null || val === "") &&
