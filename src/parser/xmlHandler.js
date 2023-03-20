@@ -48,6 +48,10 @@ class XMLHandler {
       "AddressLine1",
       "AddressCategory",
       "PostalCode",
+      "EID",
+      "ClientURN",
+      "CashReference",
+      "Reference",
     ];
     if (
       (val === null || val === "") &&
@@ -94,9 +98,32 @@ class XMLHandler {
       let attrs = null;
       if (descriptor.isMany || descriptor.elements?.length) {
         if (Array.isArray(val)) {
-          for (let i = 0, n = val.length; i < n; i++) {
-            node = this.jsonToXml(node, nsContext, descriptor, val[i]);
-          }
+          // console.log({descriptor})
+          // for (let i = 0, n = val.length; i < n; i++) {
+          //   console.log({node, nsContext, descriptor, val: val[i]})
+          //   node = this.jsonToXml(node, nsContext, descriptor, val[i]);
+          // }
+          // return node;
+
+          const newObj = {};
+
+          val.forEach((obj) => {
+            const newObjKeys = Object.keys(newObj);
+            const valKeys = Object.keys(obj);
+
+            valKeys.forEach((key) => {
+              if (newObjKeys.includes(key)) {
+                const modifiedKey = `${key}-${Math.floor(
+                  Math.random() * 10000
+                )}`;
+                newObj[modifiedKey] = obj[key];
+                return;
+              }
+              newObj[key] = obj[key];
+            });
+          });
+
+          node = this.jsonToXml(node, nsContext, descriptor, newObj);
           return node;
         }
       }
@@ -178,6 +205,7 @@ class XMLHandler {
           }
         }
         val = toXmlDateOrTime(descriptor, val);
+
         element = isSimple
           ? node.element(elementName, val)
           : node.element(elementName);
@@ -338,6 +366,7 @@ class XMLHandler {
    */
   mapObject(node, nsContext, descriptor, val, attrs) {
     if (val == null) return node;
+
     if (typeof val !== "object" || val instanceof Date) {
       val = toXmlDateOrTime(descriptor, val);
       node.text(val);
@@ -372,6 +401,7 @@ class XMLHandler {
     if (!Array.isArray(val)) {
       const names = this._sortKeys(val, elementOrder);
       for (let p of names) {
+        if (p?.includes("-")) p = p.split("-")[0];
         if (p === this.options.attributesKey) continue;
         let child = val[p];
         let childDescriptor = elements[p] || attributes[p];
