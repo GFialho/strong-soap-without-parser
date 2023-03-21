@@ -53,6 +53,8 @@ class XMLHandler {
       "CashReference",
       "Reference",
       "SendMethod",
+      "CustomerToken",
+      "MessageText",
     ];
     if (
       (val === null || val === "") &&
@@ -105,6 +107,20 @@ class XMLHandler {
           //   node = this.jsonToXml(node, nsContext, descriptor, val[i]);
           // }
           // return node;
+
+          // {
+          //   "CallSourceList": [
+          //     {
+          //       "CallSource": 1
+          //     },
+          //     {
+          //       "CallSource": 1
+          //     },
+          //     {
+          //       "CallSource": 1
+          //     }
+          //   ]
+          // }
 
           const newObj = {};
 
