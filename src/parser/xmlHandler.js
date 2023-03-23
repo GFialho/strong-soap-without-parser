@@ -55,6 +55,18 @@ class XMLHandler {
       "SendMethod",
       "CustomerToken",
       "MessageText",
+      "OfferReference",
+      "Telephone",
+      "EmailAddr",
+      "InvoiceNo",
+      "ManuCustNo",
+      "SequenceNo",
+      "ExternalAgent",
+      "NationalIdentifier",
+      "AuthNo",
+      "ReferralNo",
+      "Account",
+      "SortCode",
     ];
     if (
       (val === null || val === "") &&
@@ -101,26 +113,18 @@ class XMLHandler {
       let attrs = null;
       if (descriptor.isMany || descriptor.elements?.length) {
         if (Array.isArray(val)) {
-          // console.log({descriptor})
-          // for (let i = 0, n = val.length; i < n; i++) {
-          //   console.log({node, nsContext, descriptor, val: val[i]})
-          //   node = this.jsonToXml(node, nsContext, descriptor, val[i]);
-          // }
-          // return node;
-
-          // {
-          //   "CallSourceList": [
-          //     {
-          //       "CallSource": 1
-          //     },
-          //     {
-          //       "CallSource": 1
-          //     },
-          //     {
-          //       "CallSource": 1
-          //     }
-          //   ]
-          // }
+          if (
+            (val[0] &&
+              typeof val[0] === "object" &&
+              Object.keys(val[0]).length > 1) ||
+            typeof val[0] !== "object"
+          ) {
+            for (let i = 0, n = val.length; i < n; i++) {
+              console.log({ node, nsContext, descriptor, val: val[i] });
+              node = this.jsonToXml(node, nsContext, descriptor, val[i]);
+            }
+            return node;
+          }
 
           const newObj = {};
 
