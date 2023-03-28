@@ -25,6 +25,7 @@ class Client extends Base {
   constructor(wsdl, endpoint, options) {
     super(wsdl, options);
     options = options || {};
+    this.options = options || {};
     this.xmlHandler = new XMLHandler(wsdl.definitions.schemas, options);
     this._initializeServices(endpoint);
     this.httpClient = options.httpClient || new HttpClient(options);
@@ -258,6 +259,13 @@ class Client extends Base {
 
     debug("client request, calling jsonToXml. args: %j", args);
     xmlHandler.jsonToXml(soapBodyElement, nsContext, inputBodyDescriptor, args);
+
+    if (this.options.cleanNamespaces) {
+      const nsUris = Object.keys(xmlHandler.namespaces);
+      nsUris.forEach((uri) => {
+        envelope.doc.attribute("xmlns:" + xmlHandler.namespaces[uri], uri);
+      });
+    }
 
     if (self.security && self.security.postProcess) {
       self.security.postProcess(envelope.header, envelope.body);

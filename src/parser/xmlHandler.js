@@ -27,6 +27,37 @@ class XMLHandler {
     this.options.xmlKey = this.options.xmlKey || "$xml";
     this.options.attributesKey = this.options.attributesKey || "$attributes";
     this.options.xsiTypeKey = this.options.xsiTypeKey || "$xsiType";
+    this.namespaces = this.namespaces || {};
+  }
+
+  createPrefix(allPrefixes) {
+    const sortedPrefixes = allPrefixes.sort();
+    const latestPrefix = sortedPrefixes[sortedPrefixes.length - 1];
+    const number = +latestPrefix?.replace("ns", "");
+    const newNumber = (number || 0) + 1;
+    const prefix = `ns${newNumber}`;
+    return prefix;
+  }
+
+  findPrefix(prefix, nsUri) {
+    let newPrefix;
+    let namespaceUri;
+    const allPrefixes = [];
+    const namespacesUris = Object.keys(this.namespaces);
+    namespacesUris.every((uri) => {
+      allPrefixes.push(this.namespaces[uri]);
+      if (this.namespaces[uri] === prefix) {
+        namespaceUri = uri;
+        return false;
+      }
+      return true;
+    });
+
+    if (namespaceUri !== nsUri) newPrefix = this.namespaces[nsUri];
+    else newPrefix = prefix;
+    if (!newPrefix) newPrefix = this.createPrefix(allPrefixes);
+
+    return newPrefix;
   }
 
   jsonToXml(node, nsContext, descriptor, val) {
@@ -67,6 +98,9 @@ class XMLHandler {
       "ReferralNo",
       "Account",
       "SortCode",
+      "NomPayDay",
+      "PeriodOfCover",
+      "GGOrderNumber",
     ];
     if (
       (val === null || val === "") &&
@@ -120,7 +154,6 @@ class XMLHandler {
             typeof val[0] !== "object"
           ) {
             for (let i = 0, n = val.length; i < n; i++) {
-              console.log({ node, nsContext, descriptor, val: val[i] });
               node = this.jsonToXml(node, nsContext, descriptor, val[i]);
             }
             return node;
@@ -183,10 +216,19 @@ class XMLHandler {
         }
         // add the element to a parent node
         let prefix = mapping ? mapping.prefix : descriptor.qname.prefix;
+
+        if (this.options.cleanNamespaces)
+          prefix = this.findPrefix(prefix, descriptor.qname.nsURI);
+
         elementName = prefix ? prefix + ":" + name : name;
         // if namespace is newly declared add the xmlns attribute
         if (newlyDeclared) {
-          xmlns = prefix ? "xmlns:" + prefix : "xmlns";
+          if (this.options.cleanNamespaces) {
+            if (!this.namespaces[descriptor.qname.nsURI])
+              this.namespaces[descriptor.qname.nsURI] = prefix;
+          } else {
+            xmlns = prefix ? "xmlns:" + prefix : "xmlns";
+          }
         }
       }
 
