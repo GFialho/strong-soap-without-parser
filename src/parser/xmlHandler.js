@@ -101,6 +101,7 @@ class XMLHandler {
       "NomPayDay",
       "PeriodOfCover",
       "GGOrderNumber",
+      "CallSource",
     ];
     if (
       (val === null || val === "") &&
