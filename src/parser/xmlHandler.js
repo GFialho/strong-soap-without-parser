@@ -102,6 +102,7 @@ class XMLHandler {
       "PeriodOfCover",
       "GGOrderNumber",
       "CallSource",
+      "SerialNumber",
     ];
     if (
       (val === null || val === "") &&
